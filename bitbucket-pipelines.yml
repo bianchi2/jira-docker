@@ -12,3 +12,5 @@ pipelines:
           name: 'Build and Test'
           script:
             - docker info
+          services:
+            - docker

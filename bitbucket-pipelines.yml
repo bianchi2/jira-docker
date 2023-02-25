@@ -3,7 +3,7 @@
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
 
-image: atlassian/default-image:3
+image: python
 
 pipelines:
   default:
@@ -11,7 +11,8 @@ pipelines:
       - step:
           name: 'Build and Test'
           script:
-            - docker info
-            - docker build -t myimage .
+            - docker login -u eivantsov -p ${DOCKER_PASSWORD}
+            - pip install docker
+            - python release_maker.py
           services:
             - docker

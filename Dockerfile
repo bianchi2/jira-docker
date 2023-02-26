@@ -31,13 +31,13 @@ ARG JIRA_VERSION
 ARG ARTEFACT_NAME=atlassian-jira-software
 ARG DOWNLOAD_URL=https://product-downloads.atlassian.com/software/jira/downloads/${ARTEFACT_NAME}-${JIRA_VERSION}.tar.gz
 
-COPY atlassian-jira-software-${JIRA_VERSION}.tar.gz /opt/
-RUN mkdir -p ${JIRA_INSTALL_DIR} && \
-    tar -xzf /opt/atlassian-jira-software-${JIRA_VERSION}.tar.gz --strip-components 1 -C ${JIRA_INSTALL_DIR}
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${JIRA_HOME} --shell /bin/bash ${RUN_USER} \
     && echo PATH=$PATH > /etc/environment \
     && mkdir -p ${JIRA_INSTALL_DIR} \
+    \
+    && curl -Ls ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "${JIRA_INSTALL_DIR}" \
+    \
     && chmod -R "u=rwX,g=rX,o=rX"                   ${JIRA_INSTALL_DIR}/ \
     && chown -R root.                               ${JIRA_INSTALL_DIR}/ \
     && chown -R ${RUN_USER}:${RUN_GROUP}            ${JIRA_INSTALL_DIR}/logs \
@@ -59,4 +59,4 @@ COPY entrypoint.py \
      shutdown-wait.sh \
      shared-components/image/entrypoint_helpers.py  /
 COPY shared-components/support                      /opt/atlassian/support
-COPY config/* /opt/atlassian/etc/
+COPY config/*                                       /opt/atlassian/etc/

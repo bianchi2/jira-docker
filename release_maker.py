@@ -8,13 +8,11 @@ platforms = ['linux/arm64', 'linux/amd64']
 repo = 'eivantsov/jira'
 tags = ['9.4.0']
 
-ARCH = os.getenv('ARCH')
 PASSWORD = os.getenv('DOCKER_PASSWORD')
-print(PASSWORD)
 docker.login(username='eivantsov', password=PASSWORD)
 
 build = docker.buildx.build(build_args={'JIRA_VERSION': tags[0]}, context_path='.', platforms=platforms,
-                            tags=tags, stream_logs=True, push=True)
+                            output={'type': 'registry', 'name': repo}, tags=[repo+':'+tags[0]], stream_logs=True)
 
 for line in build:
     print(line)
